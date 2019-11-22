@@ -1,2 +1,2 @@
-# Rental-Kendaraan
+# Rental Kendaraan
 Final Project Rental Kendaraan
