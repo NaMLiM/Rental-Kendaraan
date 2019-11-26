@@ -8,12 +8,10 @@ listAksiRental = PrettyTable()
 listAksiPeminjam = PrettyTable()
 listKendaraan = PrettyTable()
 
-
 def login():
     global login_status, username
     login_status = None
     print()
-
     while True:
         if login_status == None:
             print("==========Login==========")
@@ -22,8 +20,8 @@ def login():
             cursor.execute("select * from pegawai where username=%s and password=%s", (username, password))
             animated_loading("Login", random.uniform(0.3, 0.5))
             if cursor.fetchone():
-                print("\rSYS: Logged In")
                 login_status = "Logged In"
+                print("\rSYS: Logged In")
             else:
                 print("\rSYS: Username/Password Salah!")
                 print()
@@ -41,7 +39,6 @@ def login():
     clearcmd()
     print("Selamat Datang", username)
 
-
 def logout():
     global login_status
     login_status = None
@@ -50,7 +47,6 @@ def logout():
     time.sleep(3)
     clearcmd()
     login()
-
 
 def main():
     global login_status
@@ -92,7 +88,6 @@ def main():
         else:
             print("Aksi Tidak Valid")
             print()
-
 
 if __name__ == '__main__':
     main()

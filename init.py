@@ -12,7 +12,6 @@ if platform.system() == "Windows":
 elif platform.system() == "Linux":
     clearcmd = lambda: os.system("clear")
 
-
 def animated_loading(text, i, num=None):
     loading_char = "|/-\|"
     if num == True:
@@ -23,7 +22,6 @@ def animated_loading(text, i, num=None):
         for char in loading_char:
             sys.stdout.write('\r' + text + '...' + str(char))
             time.sleep(i)
-
 
 def connect_db():
     global db, cursor
@@ -41,7 +39,6 @@ def connect_db():
             for i in range(5, 0, -1):
                 sys.stdout.write('\r' + "SYS: Mencoba Lagi Dalam " + str(i))
                 time.sleep(1)
-
 
 animated_loading("SYS: Loading App", 0.010, True)
 print("\r" + "SYS: Loading App Sukses!")
