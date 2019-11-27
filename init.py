@@ -1,7 +1,6 @@
 import os
 import platform
 import random
-import sys
 import time
 
 # Console Initialization
@@ -16,11 +15,11 @@ def animated_loading(text, i, num=None):
     loading_char = "|/-\|"
     if num == True:
         for char in range(100 + 1):
-            sys.stdout.write('\r' + text + '...' + str(char) + "%")
+            print("\r" + text + "..." + str(char) + "%", end="")
             time.sleep(i)
     else:
         for char in loading_char:
-            sys.stdout.write('\r' + text + '...' + str(char))
+            print("\r" + text + "..." + str(char), end="")
             time.sleep(i)
 
 def connect_db():
@@ -37,7 +36,7 @@ def connect_db():
         except:
             print("\rSYS: Koneksi Database Gagal!")
             for i in range(5, 0, -1):
-                sys.stdout.write('\r' + "SYS: Mencoba Lagi Dalam " + str(i))
+                print("\rSYS: Mencoba Lagi Dalam " + str(i), end="")
                 time.sleep(1)
 
 animated_loading("SYS: Loading App", 0.010, True)
