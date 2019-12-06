@@ -2,11 +2,6 @@ from prettytable import PrettyTable
 
 from init import *
 
-listAksi = PrettyTable()
-listAksiKendaraan = PrettyTable()
-listAksiRental = PrettyTable()
-listAksiPeminjam = PrettyTable()
-listKendaraan = PrettyTable()
 
 def login():
     global login_status, username
@@ -28,6 +23,7 @@ def login():
             print("=========================")
         else:
             break
+
     print()
     time.sleep(2)
     animated_loading("SYS: Fetching Data", random.uniform(0.3, 0.5))
@@ -53,16 +49,25 @@ def main():
     global cursor
     if login_status == None:
         login()
+
+    listAksi = PrettyTable()
+    listAksiKendaraan = PrettyTable()
+    listAksiRental = PrettyTable()
+    listAksiPeminjam = PrettyTable()
+    listKendaraan = PrettyTable()
+
     # tabel listAksi
     listAksi.field_names = ["Aksi"]
     listAksi.add_row(["1.Opsi Kendaraan"])
     listAksi.add_row(["2.Opsi Rental"])
     listAksi.add_row(["3.Opsi Peminjam"])
     listAksi.add_row(["4.Logout"])
+
     # tabel listAksiKendaraan
     listAksiKendaraan.field_names = ["Aksi Tabel Kendaraan"]
     listAksiKendaraan.add_row(["1.List Kendaraan"])
     listAksiKendaraan.add_row(["2.Kembali"])
+
     # tabel listKendaraan
     listKendaraan.field_names = ["No", "Nama Kendaraan", "Merk Kendaraan", "Jenis Kendaraan", "Jumlah Kendaraan"]
     while True:
