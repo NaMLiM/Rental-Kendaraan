@@ -2,7 +2,6 @@ import os
 import platform
 import random
 import time
-
 import mysql.connector as mysql
 
 # Console Initialization
