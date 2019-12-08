@@ -55,6 +55,10 @@ def main():
     listaksirental = PrettyTable()
     listaksipeminjam = PrettyTable()
     listkendaraan = PrettyTable()
+    listrental = PrettyTable()
+
+    data = PrettyTable()
+    data.title = "Data"
 
     # tabel listaksi
     listaksi.field_names = ["Aksi"]
@@ -63,18 +67,30 @@ def main():
     listaksi.add_row(["3.Opsi Peminjam"])
     listaksi.add_row(["4.Logout"])
 
+    # tabel listaksirental
+    listaksirental.field_names = ["Aksi Tabel Rental"]
+    listaksirental.add_row(["1.Rental Kendaraan"])
+    listaksirental.add_row(["2.List Rental"])
+    listaksirental.add_row(["3.Kembali"])
+
     # tabel listaksikendaraan
     listaksikendaraan.field_names = ["Aksi Tabel Kendaraan"]
     listaksikendaraan.add_row(["1.List Kendaraan"])
     listaksikendaraan.add_row(["2.Kembali"])
 
-    # tabel listkendaraan
-    listkendaraan.field_names = ["No", "Nama Kendaraan", "Merk Kendaraan", "Jenis Kendaraan", "Jumlah Kendaraan"]
+    # tabel listaksipeminjam
+    listaksipeminjam.field_names = ["Aksi Tabel Peminjam"]
+    listaksipeminjam.add_row(["1.Daftarkan Peminjam"])
+    listaksipeminjam.add_row(["2.List Peminjam"])
+    listaksipeminjam.add_row(["3.Kembali"])
+
     while True:
         print(listaksi)
         pilih = int(input("Masukkan Aksi | "))
         if pilih == 1:
             clearcmd()
+            listkendaraan.field_names = ["No", "Nama Kendaraan", "Merk Kendaraan",
+                                         "Jenis Kendaraan", "Jumlah Kendaraan"]
             print(listaksikendaraan)
             pilih = int(input("Masukkan Aksi | "))
             if pilih == 1:
@@ -88,11 +104,39 @@ def main():
             else:
                 clearcmd()
                 break
+        elif pilih == 2:
+            clearcmd()
+            print(listaksirental)
+            pilih = int(input("Masukkan Aksi | "))
+            if pilih == 1:
+                clearcmd()
+                nik = input("Masukkan NIK Peminjam: ")
+                cursor.execute("select NIK, NAMA_PEMINJAM from peminjam where NIK = %s", (nik,))
+                result = cursor.fetchone()
+                if result:
+                    data.field_names = ["NIK", "NAMA"]
+                    data.add_row([result[0], result[1]])
+                    print(data)
+                    data.clear()
+
+            elif pilih == 2:
+                clearcmd()
+                listrental.field_names = ["ID Rental", "ID Pegawai", "ID Kendaraan", "NIK Peminjam",
+                                          "Tanggal Rental", "Status Rental"]
+                cursor.execute("select * from rental")
+                result = cursor.fetchall()
+                for i in range(len(result)):
+                    listrental.add_row(result[i])
+                print(listrental)
+                listrental.clear_rows()
         elif pilih == 4:
+            clearcmd()
             logout()
         else:
             print("Aksi Tidak Valid")
             print()
+            time.sleep(2)
+            clearcmd()
 
 
 if __name__ == '__main__':
