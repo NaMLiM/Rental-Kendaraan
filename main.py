@@ -5,10 +5,9 @@ from init import *
 
 def login():
     global login_status, username
-    login_status = None
     print()
     while True:
-        if login_status == None:
+        if login_status is None:
             print("==========Login==========")
             username = input("Masukkan Username: ")
             password = input("Masukkan Password: ")
@@ -35,6 +34,7 @@ def login():
     clearcmd()
     print("Selamat Datang", username)
 
+
 def logout():
     global login_status
     login_status = None
@@ -44,47 +44,47 @@ def logout():
     clearcmd()
     login()
 
+
 def main():
-    global login_status
-    global cursor
-    if login_status == None:
+    global login_status, cursor
+    if login_status is None:
         login()
 
-    listAksi = PrettyTable()
-    listAksiKendaraan = PrettyTable()
-    listAksiRental = PrettyTable()
-    listAksiPeminjam = PrettyTable()
-    listKendaraan = PrettyTable()
+    listaksi = PrettyTable()
+    listaksikendaraan = PrettyTable()
+    listaksirental = PrettyTable()
+    listaksipeminjam = PrettyTable()
+    listkendaraan = PrettyTable()
 
-    # tabel listAksi
-    listAksi.field_names = ["Aksi"]
-    listAksi.add_row(["1.Opsi Kendaraan"])
-    listAksi.add_row(["2.Opsi Rental"])
-    listAksi.add_row(["3.Opsi Peminjam"])
-    listAksi.add_row(["4.Logout"])
+    # tabel listaksi
+    listaksi.field_names = ["Aksi"]
+    listaksi.add_row(["1.Opsi Kendaraan"])
+    listaksi.add_row(["2.Opsi Rental"])
+    listaksi.add_row(["3.Opsi Peminjam"])
+    listaksi.add_row(["4.Logout"])
 
-    # tabel listAksiKendaraan
-    listAksiKendaraan.field_names = ["Aksi Tabel Kendaraan"]
-    listAksiKendaraan.add_row(["1.List Kendaraan"])
-    listAksiKendaraan.add_row(["2.Kembali"])
+    # tabel listaksikendaraan
+    listaksikendaraan.field_names = ["Aksi Tabel Kendaraan"]
+    listaksikendaraan.add_row(["1.List Kendaraan"])
+    listaksikendaraan.add_row(["2.Kembali"])
 
-    # tabel listKendaraan
-    listKendaraan.field_names = ["No", "Nama Kendaraan", "Merk Kendaraan", "Jenis Kendaraan", "Jumlah Kendaraan"]
+    # tabel listkendaraan
+    listkendaraan.field_names = ["No", "Nama Kendaraan", "Merk Kendaraan", "Jenis Kendaraan", "Jumlah Kendaraan"]
     while True:
-        print(listAksi)
+        print(listaksi)
         pilih = int(input("Masukkan Aksi | "))
         if pilih == 1:
             clearcmd()
-            print(listAksiKendaraan)
+            print(listaksikendaraan)
             pilih = int(input("Masukkan Aksi | "))
             if pilih == 1:
                 clearcmd()
                 cursor.execute("select * from kendaraan")
                 result = cursor.fetchall()
                 for i in range(len(result)):
-                    listKendaraan.add_row(result[i])
-                print(listKendaraan)
-                listKendaraan.clear_rows()
+                    listkendaraan.add_row(result[i])
+                print(listkendaraan)
+                listkendaraan.clear_rows()
             else:
                 clearcmd()
                 break
@@ -94,5 +94,8 @@ def main():
             print("Aksi Tidak Valid")
             print()
 
+
 if __name__ == '__main__':
+    login_status = None
+    username = None
     main()
