@@ -2,17 +2,21 @@ import os
 import platform
 import random
 import time
+
 import mysql.connector as mysql
 
 # Console Initialization
-os.system("title Rental Kendaraan")
-os.system("color 1F")
 if platform.system() == "Windows":
     def clearcmd():
         os.system("cls")
+
+
+    os.system("title Rental Kendaraan")
+    os.system("color 1F")
 elif platform.system() == "Linux":
     def clearcmd():
         os.system("clear")
+
 cursor, db = None, None
 
 
@@ -34,7 +38,7 @@ def connect_db():
         animated_loading("SYS: Menghubungkan", random.uniform(0.3, 0.7))
         try:
             db = mysql.connect(host="localhost", user="root", passwd="", database="rental")
-            cursor = db.cursor()
+            cursor = db.cursor(dictionary=True)
             if db:
                 print("\rSYS: Koneksi Database Sukses!")
                 break
