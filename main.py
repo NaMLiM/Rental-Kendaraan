@@ -184,6 +184,7 @@ def main():
                 if result:
                     print(listrental)
                     id_rental = int(input("Masukkan ID Rental: "))
+                    clearcmd()
                     cursor.execute("select ID_RENTAL, ID_KENDARAAN, NIK from rental where ID_RENTAL=%s and"
                                    " STATUS_RENTAL='Meminjam'", (id_rental,))
                     result = cursor.fetchone()
