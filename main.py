@@ -1,5 +1,3 @@
-import datetime
-
 from prettytable import PrettyTable
 
 from init import *
@@ -38,6 +36,8 @@ def login():
     time.sleep(2)
     clearcmd()
     print("Selamat Datang", nama_pegawai)
+    time.sleep(2)
+    clearcmd()
 
 
 def logout():
@@ -59,9 +59,19 @@ def main():
     listaksikendaraan = PrettyTable()
     listaksirental = PrettyTable()
     listaksipeminjam = PrettyTable()
+
     listkendaraan = PrettyTable()
+    listkendaraan.title = "List Kendaraan"
+    listkendaraan.field_names = ["ID", "Nama Kendaraan", "Merk Kendaraan", "Jenis Kendaraan", "Jumlah Kendaraan"]
+
     listrental = PrettyTable()
+    listrental.title = "List Rental"
+    listrental.field_names = ["ID Rental", "ID Pegawai", "ID Kendaraan", "NIK Peminjam", "Tanggal Rental",
+                              "Status Rental"]
+
     listpeminjam = PrettyTable()
+    listpeminjam.title = "List Peminjam"
+    listpeminjam.field_names = ["NIK", "Nama Peminjam", "Alamat Peminjam", "Tanggal Daftar"]
 
     data = PrettyTable()
     data.title = "Data"
@@ -96,8 +106,6 @@ def main():
         pilih = int(input("Masukkan Aksi | "))
         if pilih == 1:
             clearcmd()
-            listkendaraan.field_names = ["ID", "Nama Kendaraan", "Merk Kendaraan",
-                                         "Jenis Kendaraan", "Jumlah Kendaraan"]
             print(listaksikendaraan)
             pilih = int(input("Masukkan Aksi | "))
             if pilih == 1:
@@ -109,13 +117,12 @@ def main():
                                            i['JENIS_KENDARAAN'], i['JUMLAH_KENDARAAN']])
                 print(listkendaraan)
                 listkendaraan.clear_rows()
+                input("Tekan Enter untuk melanjukan...")
+                clearcmd()
             else:
                 clearcmd()
-                break
         elif pilih == 2:
             clearcmd()
-            listrental.field_names = ["ID Rental", "ID Pegawai", "ID Kendaraan", "NIK Peminjam",
-                                      "Tanggal Rental", "Status Rental"]
             cursor.execute("select * from rental")
             result = cursor.fetchall()
             for i in result:
@@ -135,8 +142,9 @@ def main():
                     data.clear()
                     cursor.execute("select * from kendaraan")
                     result = cursor.fetchall()
-                    for i in range(len(result)):
-                        listkendaraan.add_row(result[i])
+                    for i in result:
+                        listkendaraan.add_row([i['ID_KENDARAAN'], i['NAMA_KENDARAAN'], i['MERK_KENDARAAN'],
+                                               i['JENIS_KENDARAAN'], i['JUMLAH_KENDARAAN']])
                     print(listkendaraan)
                     listkendaraan.clear_rows()
                     id_kendaraan = input("Masukkan ID Kendaraan: ")
@@ -146,29 +154,37 @@ def main():
                     if result:
                         jumlah_kendaraan = int(result['JUMLAH_KENDARAAN'])
                         if jumlah_kendaraan > 0:
-                            dt = datetime.datetime.now()
                             cursor.execute("insert into "
                                            "rental(ID_PEGAWAI, ID_KENDARAAN, NIK, TANGGAL_RENTAL, STATUS_RENTAL) "
-                                           "values(%s, %s, %s, %s, %s", (id_kendaraan, id_kendaraan, nik,
-                                                                         dt.strftime("%Y-%m-%d %H:%M:%S"), "Meminjam"))
+                                           "values(%s, %s, %s, CURRENT_TIMESTAMP(), 'Meminjam')",
+                                           (id_pegawai, id_kendaraan, nik))
                             db.commit()
                             jumlah_kendaraan -= 1
                             cursor.execute("update kendaraan set JUMLAH_KENDARAAN = %s", (jumlah_kendaraan,))
                             db.commit()
                             print("SYS: Sukses Menambahkan Data!")
                             time.sleep(2)
+                            clearcmd()
                         else:
                             print("SYS: Kendaraan {} Sedang Dipinjam Semua!".format(id_kendaraan))
                             time.sleep(2)
+                            clearcmd()
                     else:
                         print("SYS: ID Kendaraan Tidak Ditemukan!")
                         time.sleep(2)
+                        clearcmd()
                         break
+                else:
+                    clearcmd()
+                    print("SYS: NIK Tidak Ditemukan!")
+                    time.sleep(2)
+                    clearcmd()
             elif pilih == 2:
                 clearcmd()
                 print(listrental)
                 id_rental = int(input("Masukkan ID Rental: "))
-                cursor.execute("select ID_RENTAL, NIK, ID_KENDARAAN from rental where ID_RENTAL=%s", (id_rental,))
+                cursor.execute("select ID_RENTAL, ID_KENDARAAN, NIK from rental where ID_RENTAL=%s and"
+                               " STATUS_RENTAL='Meminjam'", (id_rental,))
                 result = cursor.fetchone()
                 if result:
                     nik = result['NIK']
@@ -184,6 +200,7 @@ def main():
                                                                                                        nama_kendaraan)]
                     data.add_row(["1.Yes"])
                     data.add_row(["2.No"])
+                    print(data)
                     pilih = int(input("Masukkan Aksi | "))
                     if pilih == 1:
                         try:
@@ -203,14 +220,20 @@ def main():
                         except mysql.errors.DatabaseError:
                             print("SYS: Pengembalian Gagal!")
                             time.sleep(2)
-                listrental.clear_rows()
+                    else:
+                        break
+                else:
+                    print("SYS: ID Rental [{}] Tidak Ditemukan/Sudah Kembali!".format(id_rental))
             elif pilih == 3:
                 clearcmd()
                 print(listrental)
-                listrental.clear_rows()
+                input("Tekan Enter untuk melanjutkan...")
+                clearcmd()
+            else:
+                clearcmd()
+            listrental.clear_rows()
         elif pilih == 3:
             clearcmd()
-            listpeminjam.field_names = ["NIK", "Nama Peminjam", "Alamat Peminjam", "Tanggal Daftar"]
             cursor.execute("select * from peminjam")
             result = cursor.fetchall()
             for i in result:
@@ -225,16 +248,23 @@ def main():
                 cursor.execute("select * from peminjam")
                 result = cursor.fetchall()
                 if nik not in result:
-                    dt = datetime.datetime.now()
                     cursor.execute("insert into peminjam(NIK, NAMA_PEMINJAM, ALAMAT_PEMINJAM, TGL_DAFTAR) values "
-                                   "(%s, %s, %s, %s)", (nik, nama_peminjam, alamat_peminjam,
-                                                        dt.strftime("%Y-%m-%d %H:%M:%S")))
+                                   "(%s, %s, %s, CURRENT_TIMESTAMP())", (nik, nama_peminjam, alamat_peminjam))
                     db.commit()
                     print("SYS: Sukses!")
                     time.sleep(2)
                 else:
-                    print("SYS: NIK Sudah Terdaftar!")
+                    print("SYS: NIK [{}] Sudah Terdaftar!".format(nik))
                     time.sleep(2)
+            elif pilih == 2:
+                clearcmd()
+                print(listpeminjam)
+                input("Tekan Enter untuk melanjutkan...")
+
+                clearcmd()
+            else:
+                clearcmd()
+            listpeminjam.clear_rows()
         elif pilih == 4:
             clearcmd()
             logout()
