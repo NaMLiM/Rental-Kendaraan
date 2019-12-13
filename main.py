@@ -122,11 +122,6 @@ def main():
                 clearcmd()
         elif pilih == 2:
             clearcmd()
-            cursor.execute("select * from rental")
-            result = cursor.fetchall()
-            for i in result:
-                listrental.add_row([i['ID_RENTAL'], i['ID_PEGAWAI'], i['ID_KENDARAAN'], i['NIK'], i['TANGGAL_RENTAL'],
-                                    i['STATUS_RENTAL']])
             print(listaksirental)
             pilih = int(input("Masukkan Aksi | "))
             if pilih == 1:
@@ -139,7 +134,6 @@ def main():
                     data.add_row([result['NIK'], result['NAMA_PEMINJAM']])
                     print(data)
                     data.clear()
-                    data = None
                     cursor.execute("select * from kendaraan")
                     result = cursor.fetchall()
                     for i in result:
@@ -160,7 +154,8 @@ def main():
                                            (id_pegawai, id_kendaraan, nik))
                             db.commit()
                             jumlah_kendaraan -= 1
-                            cursor.execute("update kendaraan set JUMLAH_KENDARAAN = %s", (jumlah_kendaraan,))
+                            cursor.execute("update kendaraan set JUMLAH_KENDARAAN = %s where ID_KENDARAAN=%s",
+                                           (jumlah_kendaraan, id_kendaraan))
                             db.commit()
                             print("SYS: Sukses Menambahkan Data!")
                             time.sleep(2)
@@ -173,7 +168,6 @@ def main():
                         print("SYS: ID Kendaraan Tidak Ditemukan!")
                         time.sleep(2)
                         clearcmd()
-                        break
                 else:
                     clearcmd()
                     print("SYS: NIK Tidak Ditemukan!")
@@ -181,51 +175,73 @@ def main():
                     clearcmd()
             elif pilih == 2:
                 clearcmd()
-                print(listrental)
-                id_rental = int(input("Masukkan ID Rental: "))
-                cursor.execute("select ID_RENTAL, ID_KENDARAAN, NIK from rental where ID_RENTAL=%s and"
-                               " STATUS_RENTAL='Meminjam'", (id_rental,))
-                result = cursor.fetchone()
+                cursor.execute("select * from rental where STATUS_RENTAL='Meminjam'")
+                result = cursor.fetchall()
+                for i in result:
+                    listrental.add_row(
+                        [i['ID_RENTAL'], i['ID_PEGAWAI'], i['ID_KENDARAAN'], i['NIK'], i['TANGGAL_RENTAL'],
+                         i['STATUS_RENTAL']])
                 if result:
-                    nik = result['NIK']
-                    id_kendaraan = result['ID_KENDARAAN']
-                    cursor.execute("select NAMA_PEMINJAM from peminjam where NIK=%s", (nik,))
+                    print(listrental)
+                    id_rental = int(input("Masukkan ID Rental: "))
+                    cursor.execute("select ID_RENTAL, ID_KENDARAAN, NIK from rental where ID_RENTAL=%s and"
+                                   " STATUS_RENTAL='Meminjam'", (id_rental,))
                     result = cursor.fetchone()
-                    nama_peminjam = result['NAMA_PEMINJAM']
-                    cursor.execute("select NAMA_KENDARAAN from kendaraan where ID_KENDARAAN=%s", (id_kendaraan,))
-                    result = cursor.fetchone()
-                    nama_kendaraan = result['NAMA_KENDARAAN']
-                    data.field_names = ["SYS: Apakah {}[{}] Telah Mengembalikan Kendaraan {} ?".format(nik,
-                                                                                                       nama_peminjam,
-                                                                                                       nama_kendaraan)]
-                    data.add_row(["1.Yes"])
-                    data.add_row(["2.No"])
-                    print(data)
-                    pilih = int(input("Masukkan Aksi | "))
-                    if pilih == 1:
-                        try:
-                            cursor.execute("update rental set STATUS_RENTAL = %s where ID_RENTAL = %s", ("Kembali",
-                                                                                                         id_rental))
-                            db.commit()
-                            cursor.execute("select JUMLAH_KENDARAAN from kendaraan where ID_KENDARAAN = %s",
-                                           (id_kendaraan,))
-                            result = cursor.fetchone()
-                            jumlah_kendaraan = int(result['JUMLAH_KENDARAAN'])
-                            jumlah_kendaraan += 1
-                            cursor.execute("update kendaraan set JUMLAH_KENDARAAN = %s where ID_KENDARAAN = %s",
-                                           (jumlah_kendaraan, id_kendaraan))
-                            db.commit()
-                            print("SYS: Pengembalian Sukses!")
+                    if result:
+                        nik = result['NIK']
+                        id_kendaraan = result['ID_KENDARAAN']
+                        cursor.execute("select NAMA_PEMINJAM from peminjam where NIK=%s", (nik,))
+                        result = cursor.fetchone()
+                        nama_peminjam = result['NAMA_PEMINJAM']
+                        cursor.execute("select NAMA_KENDARAAN from kendaraan where ID_KENDARAAN=%s", (id_kendaraan,))
+                        result = cursor.fetchone()
+                        nama_kendaraan = result['NAMA_KENDARAAN']
+                        data.field_names = ["SYS: Apakah {}[{}] Telah Mengembalikan Kendaraan {} ?".format
+                                            (nik, nama_peminjam, nama_kendaraan)]
+                        data.add_row(["1.Yes"])
+                        data.add_row(["2.No"])
+                        print(data)
+                        pilih = int(input("Masukkan Aksi | "))
+                        if pilih == 1:
+                            try:
+                                cursor.execute("update rental set STATUS_RENTAL = %s where ID_RENTAL = %s", ("Kembali",
+                                                                                                             id_rental))
+                                db.commit()
+                                cursor.execute("select JUMLAH_KENDARAAN from kendaraan where ID_KENDARAAN = %s",
+                                               (id_kendaraan,))
+                                result = cursor.fetchone()
+                                jumlah_kendaraan = int(result['JUMLAH_KENDARAAN'])
+                                jumlah_kendaraan += 1
+                                cursor.execute("update kendaraan set JUMLAH_KENDARAAN = %s where ID_KENDARAAN = %s",
+                                               (jumlah_kendaraan, id_kendaraan))
+                                db.commit()
+                                print("SYS: Pengembalian Sukses!")
+                                time.sleep(2)
+                                clearcmd()
+                            except mysql.errors.DatabaseError:
+                                print("SYS: Pengembalian Gagal!")
+                                time.sleep(2)
+                                clearcmd()
+                        else:
+                            print("SYS: Batal Mengembalikan!")
                             time.sleep(2)
-                        except mysql.errors.DatabaseError:
-                            print("SYS: Pengembalian Gagal!")
-                            time.sleep(2)
+                            clearcmd()
                     else:
-                        break
+                        print("SYS: ID Rental [{}] Tidak Ditemukan/Sudah Kembali!".format(id_rental))
+                        time.sleep(2)
+                        clearcmd()
                 else:
-                    print("SYS: ID Rental [{}] Tidak Ditemukan/Sudah Kembali!".format(id_rental))
+                    print("SYS: Tidak Ada Yang Meminjam!")
+                    time.sleep(2)
+                    clearcmd()
             elif pilih == 3:
                 clearcmd()
+                cursor.execute("select * from rental")
+                result = cursor.fetchall()
+                for i in result:
+                    listrental.add_row(
+                        [i['ID_RENTAL'], i['ID_PEGAWAI'], i['ID_KENDARAAN'], i['NIK'], i['TANGGAL_RENTAL'],
+                         i['STATUS_RENTAL']])
                 print(listrental)
                 input("Tekan Enter untuk melanjutkan...")
                 clearcmd()
@@ -253,14 +269,15 @@ def main():
                     db.commit()
                     print("SYS: Sukses!")
                     time.sleep(2)
+                    clearcmd()
                 else:
                     print("SYS: NIK [{}] Sudah Terdaftar!".format(nik))
                     time.sleep(2)
+                    clearcmd()
             elif pilih == 2:
                 clearcmd()
                 print(listpeminjam)
                 input("Tekan Enter untuk melanjutkan...")
-
                 clearcmd()
             else:
                 clearcmd()
