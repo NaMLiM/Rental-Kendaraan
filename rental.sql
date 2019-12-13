@@ -54,7 +54,7 @@ create table PEMINJAM
 /*==============================================================*/
 create table RENTAL
 (
-   ID_RENTAL            int not null,
+   ID_RENTAL            int not null AUTO_INCREMENT,
    ID_PEGAWAI           int,
    ID_KENDARAAN         int,
    NIK                  bigint,
