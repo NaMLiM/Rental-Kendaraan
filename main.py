@@ -73,9 +73,6 @@ def main():
     listpeminjam.title = "List Peminjam"
     listpeminjam.field_names = ["NIK", "Nama Peminjam", "Alamat Peminjam", "Tanggal Daftar"]
 
-    data = PrettyTable()
-    data.title = "Data"
-
     # tabel listaksi
     listaksi.field_names = ["Aksi"]
     listaksi.add_row(["1.Opsi Kendaraan"])
@@ -102,6 +99,8 @@ def main():
     listaksipeminjam.add_row(["3.Kembali"])
 
     while True:
+        data = PrettyTable()
+        data.title = "Data"
         print(listaksi)
         pilih = int(input("Masukkan Aksi | "))
         if pilih == 1:
@@ -140,6 +139,7 @@ def main():
                     data.add_row([result['NIK'], result['NAMA_PEMINJAM']])
                     print(data)
                     data.clear()
+                    data = None
                     cursor.execute("select * from kendaraan")
                     result = cursor.fetchall()
                     for i in result:
